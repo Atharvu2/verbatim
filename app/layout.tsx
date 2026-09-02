@@ -1,3 +1,4 @@
+import { ClerkProvider } from "@clerk/nextjs";
 import type { Metadata } from "next";
 import { Instrument_Serif, Inter } from "next/font/google";
 import "./globals.css";
@@ -30,7 +31,9 @@ export default function RootLayout({
       className={`${instrumentSerif.variable} ${inter.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col font-sans bg-[#FAFCF9] text-neutral-900">
-        {children}
+        <ClerkProvider>
+          {children}
+        </ClerkProvider>
       </body>
     </html>
   );
