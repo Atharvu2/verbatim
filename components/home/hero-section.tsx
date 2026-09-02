@@ -9,8 +9,13 @@ export interface HeroSectionProps {
 
 export function HeroSection({ onExplore, onSearch }: HeroSectionProps) {
   return (
-    <section className="relative pt-6 sm:pt-20 pb-5 flex flex-col items-center text-center px-4 max-w-4xl mx-auto">
-      
+    <section className="relative pt-6 sm:pt-9 pb-5 flex flex-col items-center text-center px-4 max-w-4xl mx-auto">
+      {/* Eyebrow Badge */}
+      <div className="mb-3.5 inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-primary-100/70 border border-primary-200/60 shadow-2xs">
+        <span className="text-[10.5px] font-semibold tracking-widest text-primary-700 uppercase font-sans">
+          Intelligent Learning
+        </span>
+      </div>
 
       {/* Main Headline */}
       <h1 className="font-serif text-4xl sm:text-5xl md:text-[54px] text-neutral-900 tracking-tight leading-[1.08] font-normal mb-3">
