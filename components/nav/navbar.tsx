@@ -1,6 +1,6 @@
 import React from "react";
 import Link from "next/link";
-import Image from "next/image";
+import { Show, SignInButton, SignUpButton, UserButton } from "@clerk/nextjs";
 import { cn } from "@/lib/utils";
 import { Logo } from "@/components/ui/logo";
 import { Bell } from "lucide-react";
@@ -15,6 +15,48 @@ export interface NavbarProps {
   items?: NavItem[];
   className?: string;
   rightElement?: React.ReactNode;
+}
+
+function NotificationsButton() {
+  return (
+    <button
+      type="button"
+      className="w-9 h-9 rounded-full flex items-center justify-center text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-400"
+      aria-label="Notifications"
+    >
+      <Bell className="w-5 h-5" strokeWidth={1.8} />
+    </button>
+  );
+}
+
+function AuthControls() {
+  return (
+    <>
+      <Show when="signed-out">
+        <NotificationsButton />
+        <SignInButton mode="modal">
+          <button
+            type="button"
+            className="h-9 rounded-[8px] px-3 text-sm font-medium text-neutral-700 transition-colors hover:text-primary-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-400"
+          >
+            Sign In
+          </button>
+        </SignInButton>
+        <SignUpButton mode="modal">
+          <button
+            type="button"
+            className="h-9 rounded-[8px] bg-primary-500 px-3.5 text-sm font-medium text-white shadow-sm transition-colors hover:bg-primary-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-400 focus-visible:ring-offset-2"
+          >
+            Sign Up
+          </button>
+        </SignUpButton>
+      </Show>
+      <Show when="signed-in">
+        <NotificationsButton />
+        <UserButton />
+      </Show>
+    </>
+  );
 }
 
 export function Navbar({
@@ -59,24 +101,7 @@ export function Navbar({
           <div className="flex items-center gap-3">{rightElement}</div>
         ) : (
           <div className="flex items-center gap-3.5">
-            <button
-              type="button"
-              className="w-9 h-9 rounded-full flex items-center justify-center text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-400"
-              aria-label="Notifications"
-            >
-              <Bell className="w-5 h-5" strokeWidth={1.8} />
-            </button>
-            <div className="relative">
-              <div className="w-8.5 h-8.5 rounded-full overflow-hidden border border-neutral-200 bg-neutral-100 flex items-center justify-center text-xs font-semibold text-neutral-700 shadow-xs cursor-pointer select-none">
-                <Image
-                  src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80"
-                  alt="User profile"
-                  width={34}
-                  height={34}
-                  className="w-full h-full object-cover"
-                />
-              </div>
-            </div>
+            <AuthControls />
           </div>
         )}
       </div>
