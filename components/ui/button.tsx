@@ -25,12 +25,12 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     ref
   ) => {
     const baseStyles =
-      "inline-flex items-center justify-center font-medium transition-all duration-150 rounded-[12px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-400 focus-visible:ring-offset-2 select-none active:scale-[0.99]";
+      "inline-flex items-center justify-center font-medium transition-all duration-150 rounded-[12px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-400 focus-visible:ring-offset-2 select-none active:scale-[0.99] whitespace-nowrap shrink-0";
 
     const sizeStyles = {
       sm: "h-9 px-3 text-xs gap-1.5",
       md: "h-[44px] px-4 text-sm gap-2",
-      lg: "h-12 px-6 text-base gap-2.5",
+      lg: "h-11 sm:h-12 px-6 text-sm sm:text-base gap-2",
     };
 
     const variantStyles = {
@@ -72,7 +72,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         {icon && iconPosition === "left" && (
           <span className="inline-flex shrink-0 items-center justify-center">{icon}</span>
         )}
-        <span>{children}</span>
+        <span className="inline-flex items-center">{children}</span>
         {icon && iconPosition === "right" && (
           <span className="inline-flex shrink-0 items-center justify-center">{icon}</span>
         )}
