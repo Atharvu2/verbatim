@@ -1,6 +1,7 @@
+"use client";
+
 import React from "react";
 import Link from "next/link";
-import { Show, SignInButton, SignUpButton, UserButton } from "@clerk/nextjs";
 import { cn } from "@/lib/utils";
 import { Logo } from "@/components/ui/logo";
 import { Bell } from "lucide-react";
@@ -30,7 +31,9 @@ function NotificationsButton() {
   );
 }
 
-function AuthControls() {
+function ClerkAuthControls() {
+  // Lazy-load Clerk components only when they're actually needed
+  const { Show, SignInButton, SignUpButton, UserButton } = require("@clerk/nextjs");
   return (
     <>
       <Show when="signed-out">
@@ -58,6 +61,23 @@ function AuthControls() {
       </Show>
     </>
   );
+}
+
+function FallbackAuthControls() {
+  return (
+    <>
+      <NotificationsButton />
+      <span className="text-xs text-neutral-400 font-medium px-2">Demo Mode</span>
+    </>
+  );
+}
+
+function AuthControls() {
+  const hasClerk = !!process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
+  if (hasClerk) {
+    return <ClerkAuthControls />;
+  }
+  return <FallbackAuthControls />;
 }
 
 export function Navbar({
@@ -113,3 +133,4 @@ export function Navbar({
     </header>
   );
 }
+
