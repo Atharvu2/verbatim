@@ -1,55 +1,44 @@
-﻿# Verbatim
+# Verbatim
 
-> **Agent-Native Learning Workspace powered by WebMCP**
-> *The web, designed for both humans and agents.*
+> An agent-native learning platform powered by WebMCP.
 
----
-
-## Problem
-
-Traditional learning platforms force humans to manually search, filter, guess prerequisites, sequence modules, and navigate fragmented course catalogs.
-
-When AI agents try to assist users on normal websites, they are forced to act like artificial humans: inferring complex DOM layouts, taking screenshots, and executing fragile mouse clicks. This is brittle, slow, and prone to error.
-
-## Solution
-
-**Verbatim** is built as an **agent-native learning environment**. Instead of forcing an AI agent to browse visually, Verbatim exposes its real application capabilities directly to agents via **WebMCP** (document.modelContext.registerTool(...)).
-
-A human and an AI agent collaborate seamlessly:
-- The human states their natural language goal (e.g., *\"Teach me Next.js server components in 25 minutes\"*).
-- The agent discovers Verbatim's structured tools, searches the real 120-lesson corpus, inspects relevant lessons, and compiles an adaptive learning plan.
-- When the human interrupts (*\"Actually, I only have 10 minutes\"*), the agent reads the learner's state and adaptively re-plans.
-- The agent opens the selected lesson directly in the human's visible workspace and updates learner progress when completed.
+Verbatim is designed for collaborative learning between humans and autonomous web agents. Instead of requiring an agent to visually parse the DOM, take screenshots, or execute brittle mouse clicks, Verbatim exposes its core platform capabilities as structured tools via the **WebMCP** specification (`document.modelContext.registerTool`).
 
 ---
 
-## Why WebMCP Matters
+## Overview
 
-> *“Traditional browser agents must infer website structure visually and interact through clicks. Verbatim exposes learning actions as structured capabilities, allowing agents to search, inspect, plan, and manipulate the actual learning workspace directly.”*
+Traditional learning portals present catalogs, filters, and lesson hierarchies that require extensive manual navigation. When browser agents interact with these sites, they must infer complex layouts and simulate human clicks.
 
-WebMCP turns the website into an **agent-operable workspace**, where human interactions and agent tool calls operate on the exact same reactive application state.
+Verbatim approaches this differently by exposing structured capabilities directly to agents:
+- **Corpus Search**: Fast semantic indexing across 120 lessons and 10 technical courses.
+- **Deep Lesson Inspection**: Structured access to lesson summaries, key learning objectives, code notes, and prerequisites.
+- **Learner State Awareness**: Real-time inspection of active courses, completed modules, and active goals.
+- **Adaptive Curricula Planning**: Dynamic sequencing of learning tracks tailored to explicit learner time constraints (e.g., 25-minute vs. 10-minute targets).
+- **Workspace Navigation**: Direct programmatic routing and workspace manipulation to open lessons and render media.
+- **Progress Tracking**: Bi-directional progress synchronization between learner actions and agent operations.
 
 ---
 
 ## Architecture
 
-`	ext
-                 HUMAN
+```text
+                 USER
                    │
                    ▼
           ┌─────────────────┐
-          │ Verbatim UI     │
+          │   Verbatim UI   │
           │                 │
           │ Courses         │
-          │ Lessons         │
-          │ Progress (13/120│
-          │ Agent Activity  │
+          │ Lesson Viewer   │
+          │ Progress State  │
+          │ Activity Stream │
           └────────┬────────┘
                    │
                    │ Shared Reactive State (LearningStore)
                    ▼
           ┌─────────────────┐
-          │ WebMCP Layer    │
+          │   WebMCP Host   │
           │ (document.      │
           │  modelContext)  │
           └────────┬────────┘
@@ -63,75 +52,76 @@ WebMCP turns the website into an **agent-operable workspace**, where human inter
                  Plan
                    │
                    ▼
-               Open Lesson (Live Workspace Mutation)
+              Open Lesson
                    │
                    ▼
-            Update Progress (13/120 → 14/120)
-`
+            Update Progress
+```
 
 ---
 
-## Available WebMCP Tools
+## WebMCP Tool Specifications
 
-All 6 tools are registered imperatively via document.modelContext.registerTool(...):
+Verbatim registers 6 core tools on `document.modelContext`:
 
-| Tool | Purpose | Key Inputs | Key Outputs |
+| Tool | Description | Arguments | Returns |
 |---|---|---|---|
-| search_learning | Search 120-lesson corpus across 10 courses | query, course?, 	opic?, limit? | Ranked lessons, summaries, duration, relevance |
-| inspect_lesson | Deep-inspect learning objectives and notes | lessonId | Objectives, notes, key points, videoUrl, proTips |
-| get_learning_state | Read current learner progress and plans | none | Current lesson, completed IDs, active plan, goal |
-| create_learning_plan | Generate time-budgeted sequenced plan | 	opic, 	imeBudget, preferences? | Sequenced lessons, durations, pedagogical rationale |
-| open_lesson | Direct manipulation of the visible workspace | lessonId | Navigates & displays lesson video/notes modal |
-| update_learning_progress | Mutate learner progress | lessonId, status | Updates progress counter (e.g. 13/120 → 14/120) |
+| `search_learning` | Query the full 120-lesson corpus across courses and modules. | `query` (string), `course?` (string), `topic?` (string), `limit?` (number) | Ranked lesson matches, summaries, durations, and relevance scores. |
+| `inspect_lesson` | Inspect learning objectives, detailed notes, pro-tips, and prerequisites. | `lessonId` (string) | Full lesson metadata, key takeaways, and related modules. |
+| `get_learning_state` | Read current learner progress, completed modules, and active plan. | _None_ | Current lesson, completed IDs, active plan, and progress stats. |
+| `create_learning_plan` | Generate an adaptive, sequenced learning plan matching a time budget. | `topic` (string), `timeBudget` (number), `preferences?` (string) | Ordered lesson sequence with durations and rationale. |
+| `open_lesson` | Directly navigate and render a specific lesson in the workspace. | `lessonId` (string) | Lesson payload, navigation event status. |
+| `update_learning_progress` | Update completion or in-progress status for a lesson. | `lessonId` (string), `status` (`completed` \| `in_progress` \| `not_started`) | Updated progress counters and completion state. |
 
 ---
 
-## The Primary 60-Second Demo Scenario
+## Agent Discoverability (`llms.txt`)
 
-1. **Goal**: User states: *“Teach me Next.js server components. I have 25 minutes.”*
-   - Agent invokes search_learning and finds relevant lessons.
-   - Agent invokes inspect_lesson on lesson.nextjs-app-router-in-depth-server-components.
-   - Agent calls create_learning_plan (25 mins) -> 3-lesson plan appears in the UI.
-2. **Collaboration & Constraint Change**: User says: *“Actually, I only have 10 minutes.”*
-   - Agent calls get_learning_state and regenerates create_learning_plan (10 mins).
-   - Plan dynamically updates to a 2-lesson prioritized track.
-3. **Action**: User says: *“Open the most important lesson.”*
-   - Agent calls open_lesson(...).
-   - The visible Verbatim workspace instantly brings up the lesson video, notes, and key points.
-4. **Progress**: User says: *“I finished the lesson. Mark it complete.”*
-   - Agent calls update_learning_progress(lessonId, 'completed').
-   - The learner progress counter visibly increments from **13 / 120** to **14 / 120**.
+Verbatim serves a standardized [`/llms.txt`](public/llms.txt) endpoint providing machine-readable documentation of platform capabilities, schemas, and constraints for automated agent discovery.
 
 ---
 
 ## Tech Stack
 
 - **Framework**: Next.js 16 (App Router), React 19, TypeScript
-- **Styling**: Tailwind CSS v4, Instrument Serif & Inter fonts
-- **WebMCP**: Imperative registration on document.modelContext
-- **Corpus**: 120 self-contained, typed lessons across 10 courses derived from Sanity seed data
-- **UI Components**: Lucide React icons, Clerk authentication controls
+- **Styling**: Tailwind CSS, Instrument Serif & Inter fonts
+- **Protocol**: WebMCP (`document.modelContext`)
+- **State Management**: Shared reactive client store
+- **Icons**: Lucide React
 
 ---
 
 ## Getting Started
 
-`ash
-# Clone and switch to the atharv branch
-git checkout atharv
+### Prerequisites
+- Node.js 20+
+- npm or pnpm
+
+### Installation
+
+```bash
+# Clone repository
+git clone https://github.com/ayatinkering/verbatim.git
+cd verbatim
 
 # Install dependencies
 npm install
 
 # Run development server
 npm run dev
+```
 
-# Open in browser
-http://localhost:3000
-`
+The application will be accessible at `http://localhost:3000`.
+
+### Building for Production
+
+```bash
+npm run build
+npm start
+```
 
 ---
 
-## Agent Discoverability (llms.txt)
+## License
 
-Verbatim serves machine-readable agent documentation at /llms.txt, describing capabilities, tool parameters, and constraints for automated agent discovery.
+MIT
