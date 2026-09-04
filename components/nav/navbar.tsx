@@ -4,6 +4,7 @@ import { Show, SignInButton, SignUpButton, UserButton } from "@clerk/nextjs";
 import { cn } from "@/lib/utils";
 import { Logo } from "@/components/ui/logo";
 import { Bell } from "lucide-react";
+import { AgentReadyBadge } from "@/components/agent/agent-ready-badge";
 
 export interface NavItem {
   label: string;
@@ -21,7 +22,7 @@ function NotificationsButton() {
   return (
     <button
       type="button"
-      className="w-9 h-9 rounded-full flex items-center justify-center text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-400"
+      className="w-9 h-9 rounded-full flex items-center justify-center text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-400 cursor-pointer"
       aria-label="Notifications"
     >
       <Bell className="w-5 h-5" strokeWidth={1.8} />
@@ -37,7 +38,7 @@ function AuthControls() {
         <SignInButton mode="modal">
           <button
             type="button"
-            className="h-9 rounded-[8px] px-3 text-sm font-medium text-neutral-700 transition-colors hover:text-primary-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-400"
+            className="h-9 rounded-[8px] px-3 text-sm font-medium text-neutral-700 transition-colors hover:text-primary-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-400 cursor-pointer"
           >
             Sign In
           </button>
@@ -45,7 +46,7 @@ function AuthControls() {
         <SignUpButton mode="modal">
           <button
             type="button"
-            className="h-9 rounded-[8px] bg-primary-500 px-3.5 text-sm font-medium text-white shadow-sm transition-colors hover:bg-primary-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-400 focus-visible:ring-offset-2"
+            className="h-9 rounded-[8px] bg-primary-500 px-3.5 text-sm font-medium text-white shadow-sm transition-colors hover:bg-primary-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-400 focus-visible:ring-offset-2 cursor-pointer"
           >
             Sign Up
           </button>
@@ -70,16 +71,20 @@ export function Navbar({
   return (
     <header
       className={cn(
-        "w-full bg-white/70 backdrop-blur-md border-b border-neutral-200/80 sticky top-0 z-40 px-6 py-2.5 sm:py-3",
+        "w-full bg-white/75 backdrop-blur-md border-b border-neutral-200/80 sticky top-0 z-40 px-6 py-2.5 sm:py-3",
         className
       )}
     >
       <div className="max-w-6xl mx-auto flex items-center justify-between">
-        <div className="flex items-center gap-8">
+        <div className="flex items-center gap-6 sm:gap-8">
           <Link href="/" className="focus-visible:outline-none">
             <Logo size="md" />
           </Link>
-          <nav className="flex items-center gap-6" aria-label="Main Navigation">
+
+          {/* WebMCP Agent Ready indicator in Nav */}
+          <AgentReadyBadge />
+
+          <nav className="hidden md:flex items-center gap-6" aria-label="Main Navigation">
             {items.map((item) => (
               <Link
                 key={item.label}
